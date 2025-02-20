@@ -84,8 +84,10 @@ class BuildingController extends BaseApiController
 
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imagePath = $image->store('buildings', 'public');
-                $data['image'] = $imagePath;
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('buildings');
+                $image->move($destinationPath, $imageName);
+                $data['image'] = 'buildings/' . $imageName;
             }
 
             $create = $this->buildingRepository->create($data);
@@ -124,8 +126,10 @@ class BuildingController extends BaseApiController
 
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imagePath = $image->store('buildings', 'public');
-                $data['image'] = $imagePath;
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('buildings');
+                $image->move($destinationPath, $imageName);
+                $data['image'] = 'buildings/' . $imageName;
             }
 
             $building = $this->buildingRepository->findById($id);

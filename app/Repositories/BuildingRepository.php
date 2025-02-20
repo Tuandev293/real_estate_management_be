@@ -1,18 +1,21 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\Building;
 use App\Repositories\BuildingRepositoryInterface;
 use Illuminate\Support\Facades\Storage;
 
-class BuildingRepository implements BuildingRepositoryInterface {
+class BuildingRepository implements BuildingRepositoryInterface
+{
     private $building;
 
-    public function __construct(Building $building){
+    public function __construct(Building $building)
+    {
         $this->building = $building;
     }
 
-     /**
+    /**
      * Get a paginated list of buildings with search and sorting.
      *
      * @param string|null $search
@@ -24,7 +27,7 @@ class BuildingRepository implements BuildingRepositoryInterface {
         return $this->building
             ->when($search, function ($query, $search) {
                 $query->where('name_building', 'LIKE', "%$search%")
-                      ->orWhere('address', 'LIKE', "%$search%");
+                    ->orWhere('address', 'LIKE', "%$search%");
             })
             ->orderBy('price', in_array(strtolower($sortOrder), ['asc', 'desc']) ? strtolower($sortOrder) : 'asc')
             ->paginate($perPage);
@@ -36,7 +39,8 @@ class BuildingRepository implements BuildingRepositoryInterface {
      * @param array $data
      * @return \App\Models\Building
      */
-    public function create($data) {
+    public function create($data)
+    {
         return $this->building->create($data);
     }
 
@@ -46,7 +50,8 @@ class BuildingRepository implements BuildingRepositoryInterface {
      * @param int $id
      * @return \App\Models\Building
      */
-    public function findById($id){
+    public function findById($id)
+    {
         return $this->building->find($id);
     }
 
@@ -57,13 +62,13 @@ class BuildingRepository implements BuildingRepositoryInterface {
      * @param array $data
      * @return \App\Models\Building
      */
-    public function update($building, $data) {
+    public function update($building, $data)
+    {
 
-        if(!empty($data['image'])){
-            if($building->image){
-                Storage::disk('public')->delete($building->image);
+        if (!empty($data['image'])) {
+            if ($building->image && file_exists(public_path($building->image))) {
+                unlink(public_path($building->image));
             }
-
             $building->image = $data['image'];
         }
 
@@ -78,9 +83,10 @@ class BuildingRepository implements BuildingRepositoryInterface {
      * @param \App\Models\Building $building
      * @return bool
      */
-    public function delete($building){
-        if ($building->image) {
-            Storage::disk('public')->delete($building->image);
+    public function delete($building)
+    {
+        if ($building->image && file_exists(public_path($building->image))) {
+            unlink(public_path($building->image));
         }
 
         return $building->delete();
