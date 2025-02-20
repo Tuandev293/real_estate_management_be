@@ -23,7 +23,7 @@ class Building extends Model
 
     public function getUrlImageAttribute()
     {
-        return $this->image ? Storage::disk('public')->url($this->image) : null;
+        return $this->image ? asset($this->image) : null;
     }
 
     public function getFormattedPriceAttribute()
